@@ -81,7 +81,7 @@ function startinfra {
         rabbitmq:3-management > /dev/null
 
     echo "Starting InfluxDB"
-    docker run -d --net todd-network --volume=/var/influxdb:/data --name influx -p 8083:8083 -p 8086:8086 tutum/influxdb:0.9 > /dev/null
+    docker run -d --net todd-network --volume=/var/influxdb:/data -e PRE_CREATE_DB="todd_metrics" --name influx -p 8083:8083 -p 8086:8086 tutum/influxdb:0.9 > /dev/null
     echo "Starting Grafana"
     docker run -d --net todd-network --volume=/var/lib/grafana:/var/lib/grafana --name grafana -p 3000:3000 grafana/grafana > /dev/null
 }
@@ -91,7 +91,7 @@ function startinfra {
 # arg $3: agent config location
 function starttodd {
     echo "Starting todd-server"
-    docker run -d -h="todd-server" -p 8081:8081 -p 8080:8080 -p 8090:8090 --net todd-network --name="todd-server" $toddimage todd-server --config="$2" > /dev/null
+    docker run -d -h="todd-server" -p 50099:50099 -p 8081:8081 -p 8080:8080 -p 8090:8090 --net todd-network --name="todd-server" $toddimage todd-server --config="$2" > /dev/null
 
     i="0"
     while [ $i -lt $1 ]
